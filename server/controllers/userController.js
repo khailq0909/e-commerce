@@ -3,14 +3,7 @@ const asyncHandler = require('express-async-handler')
 
 const getOneUser = asyncHandler(async(req,res)=>{
     const {_id} = req.user
-    const response = await User.findById(_id).select('-reFreshToken -passWord -role')
-    return res.status(200).json({
-        success:true,
-        data:response
-    })
-})
-const getAllUsers = asyncHandler(async(req,res)=>{
-    const response = await User.find();
+    const response = await User.findById(_id).select('-reFeshToken -role -passWord')
     return res.status(200).json({
         success:true,
         data:response
@@ -18,5 +11,4 @@ const getAllUsers = asyncHandler(async(req,res)=>{
 })
 module.exports = {
     getOneUser,
-    getAllUsers
 }
