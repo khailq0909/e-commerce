@@ -53,19 +53,19 @@ const login = asyncHandler(async (req,res)=>{
         mes:"Wrong password"
     })
     if(response && isMatch){
-        const {passWord,role, ...userData} =  response.toObject();
+        const {passWord,role,reFreshToken, ...userData} =  response.toObject();
         const accessToken = generateAccessToken(response._id,role)
-        const reFreshToken = generateRefreshToken(response._id)
+        const newreFreshToken = generateRefreshToken(response._id)
         await User.findByIdAndUpdate({_id: response._id},{reFreshToken},{new: true})
-        res.cookie('reFreshToken',reFreshToken,{
+        res.cookie('reFreshToken',newreFreshToken,{
             httpOnly:true,
             maxAge: 1000*60*60*24*7
         })
         return res.status(200).json({
             success:true,
+            accessToken,
             mes:"Login success",
-            userData,
-            accessToken
+            userData
         })
 }})
 const logout = asyncHandler(async(req,res)=>{
