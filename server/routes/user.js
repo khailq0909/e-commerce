@@ -1,9 +1,12 @@
 const router = require('express').Router();
 const ctrls = require('../controllers/userController')
-const {verifyToken} = require('../middlewares/verifyToken')
+const {verifyToken, verifyAdmin} = require('../middlewares/verifyToken')
 
-router.get('/find-user',verifyToken, ctrls.getOneUser);
-router.get('/find-all-users',verifyToken, ctrls.getAllUsers);
+router.get('/find-user/:id',verifyToken, ctrls.getOneUser);
+router.put('/update-user/:id',verifyToken, ctrls.updateUser);
+router.put('/admin-update-user/:id',[verifyToken,verifyAdmin], ctrls.updateUser);
+router.get('/',[verifyToken,verifyAdmin], ctrls.getAllUsers);
+router.delete('/delete-user/:id',[verifyToken, verifyAdmin], ctrls.deleteUser);
 
 
 module.exports = router
