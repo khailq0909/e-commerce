@@ -6,7 +6,9 @@ router.post('/register', ctrls.register);
 router.get('/login', ctrls.login);
 router.post('/logout',verifyToken, ctrls.logout);
 router.post('/refresh-token', ctrls.refreshAccessToken);
-router.post('/reset-password', ctrls.resetPassWord);
+router.post('/send-reset-token', ctrls.forgotPassWord);
+router.put('/reset-password', ctrls.resetPassWord);
+
 
 
 

@@ -4,6 +4,7 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const {generateAccessToken,generateRefreshToken} = require("../middlewares/jwt")
 const sendEmail = require("../ultils/sendEmail")
+const crypto = require("crypto");
 
 const register = asyncHandler(async(req,res)=>{
     const salt = bcrypt.genSaltSync(10);
@@ -47,6 +48,10 @@ const login = asyncHandler(async (req,res)=>{
         mes:"User not found"
     })
     const isMatch = bcrypt.compareSync(passWord, response.passWord);
+    if(!isMatch) return res.status(400).json({
+        success:false,
+        mes:"Wrong password"
+    })
     if(response && isMatch){
         const {passWord,role, ...userData} =  response.toObject();
         const accessToken = generateAccessToken(response._id,role)
@@ -77,7 +82,7 @@ const logout = asyncHandler(async(req,res)=>{
     })
 })
 
-const resetPassWord = asyncHandler(async(req,res)=>{
+const forgotPassWord = asyncHandler(async(req,res)=>{
     const {email} = req.body;
     if(!email) throw new Error('Missing email!!!')
     const user = await User.findOne({email});
@@ -87,8 +92,11 @@ const resetPassWord = asyncHandler(async(req,res)=>{
     await user.save();
     const html = `
     <h1>Reset password link</h1>
-    <p>Please click this link to reset your app password <strong>this link will expried in 15 munites please use this link as soon as possible</strong></p>
-    <a href=${process.env.SERVER_URL}/api/auth/reset-password${resetToken}>Click Here</a>
+    </br>
+    <p>Please click this link to reset your app password</p>
+    </br>
+    <strong>This link will expried in 15 munites fron now, please use this link as soon as possible</strong>
+    <a href=${process.env.SERVER_URL}/api/auth/reset-password/${resetToken}>Click Here</a>
     `
 
     const data = {
@@ -100,17 +108,27 @@ const resetPassWord = asyncHandler(async(req,res)=>{
     return res.status(200).json({
         status: true,
         rs
-    }) 
-    // const salt = bcrypt.genSaltSync(10);
-    // const passwordhHash = bcrypt.hashSync(req.body.passWord, salt);
-    // await User.findByIdAndUpdate({_id: response._id},{passWord: passwordhHash},{new: true})
-    // return res.status(200).json({
-    //     success:true,
-    //     mes:"Reset password success"
-    // })
-
+    })
 });
+const resetPassWord = asyncHandler(async (req, res) => {
+    const {resetToken, passWord} = req.body;
+    const salt = bcrypt.genSaltSync(10);
+    if(!passWord || !resetToken) throw new Error('Missing input!!!')
 
+    const user = await User.findOne({passWordResetToken:resetToken,passWordResetExpires:{$gt: Date.now()}})
+    if(!user) throw new Error('Invalid reset token!!!')
+    const passwordhHash = bcrypt.hashSync(passWord, salt);
+    user.passWord = passwordhHash;
+    user.passWordResetToken = "";
+    user.passWordResetExpires = "";
+    user.passWordChangedAt = new Date(Date.now());
+
+    await user.save();
+    return res.status(200).json({
+        success: user?true:false,
+        mes: user? "Passwords updated successfully":"Something went wrong"
+    })
+})
 const refreshAccessToken = asyncHandler(async(req,res)=>{
     const cookie = req.cookies;
     if(!cookie && !cookie.reFreshToken) throw new Error('No refresh token in cookies')
@@ -126,6 +144,7 @@ module.exports = {
   register,
   login,
   logout,
+  forgotPassWord,
   resetPassWord,
   refreshAccessToken
 };
