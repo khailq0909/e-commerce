@@ -93,7 +93,9 @@ const ratings = asyncHandler(async(req,res)=>{
           postedBy: _id,
         };
         product.ratings.push(rating);
-        product.totalRatings = product.ratings.reduce((acc, item) => item.star + acc, 0);
+        const sumRating =  product.ratings.reduce((acc, item) => item.star + acc, 0);
+        const ratingCount = product.ratings.length;
+        product.totalRatings = Math.round(sumRating*10/ratingCount)/10
         await product.save();
         return res.status(200).json({
           success: true,
@@ -106,7 +108,6 @@ const ratings = asyncHandler(async(req,res)=>{
         })
     }
     }
-
 })
 module.exports ={
     createProduct,

@@ -11,16 +11,46 @@ const createCategory = asyncHandler(async(req,res)=>{
         data: response
     })
 })
-const deleteProduct = asyncHandler(async(req,res)=>{});
-const updateProduct = asyncHandler(async(req,res)=>{});
-const getOneProduct = asyncHandler(async(req,res)=>{});
-const getAllProducts = asyncHandler(async(req,res)=>{
+const deleteCategory = asyncHandler(async(req,res)=>{
+    const categoryId = req.params.cid
+    if(!categoryId) throw new Error('Category not found')
+    await Category.findByIdAndDelete({_id: categoryId})
+    return res.status(200).json({
+        success:true,
+        mes:"Delete category successfully"
+    })
+});
+const updateCategory = asyncHandler(async(req,res)=>{
+    const categoryId = req.params.cid
+    if(!categoryId) throw new Error('Category not found')
+    const response = await Category.findByIdAndUpdate({_id: categoryId},req.body,{new:true})
+    return res.status(200).json({
+        success:true,
+        mes:"Update Success",
+        data:response
+    })
+});
+const getOneCategory = asyncHandler(async(req,res)=>{
+    const categoryId = req.params.cid
+    if(!categoryId) throw new Error('Category not found')
+    const response = await Category.findById({_id: categoryId})
+    return res.status(200).json({
+        success:true,
+        data:response
+    })
+});
+const getAllCategorys = asyncHandler(async(req,res)=>{
+    const response = await Category.find()
+    return res.status(200).json({
+        success:true,
+        data:response
+    })
 });
 
 module.exports ={
     createCategory,
-    deleteProduct,
-    updateProduct,
-    getOneProduct,
-    getAllProducts
+    deleteCategory,
+    updateCategory,
+    getOneCategory,
+    getAllCategorys
 }
