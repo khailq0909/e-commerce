@@ -42,10 +42,6 @@ var productSchema = new mongoose.Schema({
     type: Number, 
     default: 0 
 },
-  brand: { 
-    type: String, 
-    required: true 
-},
   ratings: [
     {
       star: { type: Number },
