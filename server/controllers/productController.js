@@ -44,38 +44,59 @@ const getOneProduct = asyncHandler(async(req,res)=>{
     })
 });
 const getAllProducts = asyncHandler(async(req,res)=>{
-    // const search = req.query.search || "";
-    // const page = parseInt(req.query.page) -1 || 0;
-    // const limit = parseInt(req.query.limit) || 5;
-    // let sort = req.query.sort || "price";
-    // let category = req.query.category || "All"
+    const queries = {...req.query}
+    const excludeFields = ['limit','sort', 'page', 'fields']
+    excludeFields.forEach(el => delete queries[el])
 
-    // const categoryOptions = await Category.find()
-    // categoryOptions.forEach((item)=>{
-    //     console.log(item.name)
+    let queryString = JSON.stringify(queries)
+    queryString= queryString.replace(/\b(gte|gt|lt|lte)\b/g, matchedEl => `$${matchedEl}`)
+    const formatedQueries = JSON.parse(queryString)
+    //Filtering
+    if(queries?.title) formatedQueries.title = {$regex: queries.title, $options: "i"}
+    // let queryCommand = Product.find(formatedQueries)
+
+    
+    try {
+        let queryCommand = Product.find(formatedQueries);
+
+        if(req.query.sort) {
+            const sortBy = req.query.sort.split(',').join(' ');
+            queryCommand = queryCommand.sort(sortBy)
+        }
+        if(req.query.fields){
+            const fields = req.query.fields.split(',').join(' ');
+            queryCommand = queryCommand.select(fields)
+        }
+        const page = +req.query.page || 1
+        const limit = +req.query.limit || 5;
+        const skip = (page -1 )*limit
+        queryCommand.skip(skip).limit(limit)
+
+        // Execute the query and await the response
+        const response = await queryCommand;
+
+        // Get total count of documents matching the search criteria
+        const counts = await Product.countDocuments(formatedQueries);
+
+        return res.status(200).json({
+            success: true,
+            counts: counts,
+            page: page,
+            limit: limit,
+            data: response,
+        });
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        return res.status(500).json({
+            success: false,
+            error: "Internal Server Error"
+        });
+    }
+    // const response = await Product.find();
+    // return res.status(200).json({
+    //     success:true,
+    //     data:response
     // })
-    // category === 'All' ?(category = [...categoryOptions]) : (category = req.query.category);
-    // req.query.sort ? (sort = req.query.sort.split(',')) : (sort = [sort])
-    // let sortBy = {};
-    // if(sort[1]){
-    //     sortBy[sort[0]] = sort[1]
-    // }else{
-    //     sortBy[sort[0]] = "asc"
-    // }
-    // const products = await Product.find({title: { $regex: new RegExp(search, "i") }}).where("category").all([...category]).sort(sortBy).skip(page*limit).limit(limit)
-    // const total = await Product.countDocuments({title: { $regex: new RegExp(search, "i") }, category:{$all:[...category]}})
-    // const response = {
-    //     error: false,
-    //     total:total,
-    //     page: page+1,
-    //     limit,
-    //     data:products
-    // }
-    const response = await Product.find();
-    return res.status(200).json({
-        success:true,
-        data:response
-    })
 });
 const ratings = asyncHandler(async(req,res)=>{
     const {_id} = req.user
