@@ -1,7 +1,7 @@
 const Product = require("../models/product")
 const asyncHandler = require("express-async-handler")
 const slugify = require("slugify")
-const Category = require("../models/category")
+const cloudinary = require('cloudinary').v2;
 
 const createProduct = asyncHandler(async(req,res)=>{
     if(Object.keys(req.body).length === 0) throw new Error("Missing input!!!")
@@ -130,7 +130,14 @@ const ratings = asyncHandler(async(req,res)=>{
     }
     }
 })
+
+const uploadProductImageUrls = asyncHandler(async(req,res)=>{
+    const imagesUploaded = req.files
+    console.log(imagesUploaded)
+    return res.json("Uploaded")
+})
 module.exports ={
+    uploadProductImageUrls,
     createProduct,
     deleteProduct,
     updateProduct,

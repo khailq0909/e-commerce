@@ -1,3 +1,4 @@
+const product = require('../models/product')
 const User = require('../models/user')
 const asyncHandler = require('express-async-handler')
 
@@ -59,10 +60,59 @@ const updateUserByAdmin = asyncHandler(async(req,res)=>{
         data:response
     })
 })
+const updateAdress = asyncHandler(async(req,res)=>{
+    const {_id} = req.user
+    const address = req.body.address
+    if(!address) throw new Error('Missing input!!!')
+    const response = await User.findByIdAndUpdate({_id},{$push:{address: address}},{new:true})
+    return res.status(200).json({
+        success:true,
+        mes:"Update Success",
+        data:response
+    })
+})
+
+const updateCart = asyncHandler(async(req,res)=>{
+    const {_id} = req.user
+    const {productId, quantity, color} = req.body
+    if(!productId || !quantity|| !color) throw new Error('Missing input!!!')
+
+    const user = await User.findById(_id).select('cart')
+    const alreadyProduct = user?.cart?.find(prod => prod.product.toString() === productId)
+    if(alreadyProduct){
+        if(alreadyProduct.color === color){
+            console.log("same color")
+
+            const response = await User.updateOne({cart: {$elemMatch : alreadyProduct}},{$set: {"cart.$.quantity":quantity}},{$new : true})
+            return res.status(200).json({
+                success:true,
+                mes:"Update Success",
+                data:response
+            })
+        }else{
+            console.log("different color")
+            const response = await User.findByIdAndUpdate({_id},{$push:{cart:{product: productId, quantity: quantity, color: color}}},{new:true})
+        return res.status(200).json({
+            success:true,
+            mes:"Update Success",
+            data:response
+        })
+        }
+    }else{
+        const response = await User.findByIdAndUpdate({_id},{$push:{cart:{product: productId, quantity: quantity, color: color}}},{new:true})
+        return res.status(200).json({
+            success:true,
+            mes:"Update Success",
+            data:response
+        })
+    } 
+})
 module.exports = {
     getOneUser,
     getAllUsers,
     deleteUser,
     updateUser,
-    updateUserByAdmin
+    updateUserByAdmin,
+    updateAdress,
+    updateCart,
 }
