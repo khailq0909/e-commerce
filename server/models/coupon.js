@@ -5,6 +5,16 @@ const couponSchema = new mongoose.Schema({
         required: true,
         unique: true,
         trim: true,
+    },
+    disCount:{
+        type: Number,
+        required: true,
+        unique: true,
+    },
+    expired:{
+        type: Date,
+        required: true,
+        unique: true, 
     }
 })
 

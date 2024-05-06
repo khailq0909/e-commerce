@@ -10,7 +10,11 @@ const port = process.env.PORT || 8000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-// app.use('/', (req,res)=>{res.send("SERVER RUNNING")});
+const cors = require('cors');
+app.use(cors({
+  credentials: true,
+  origin: ['http://localhost:3000']
+}));
 dbConnect()
 initRoutes(app);
 app.listen(port, () => {

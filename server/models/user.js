@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const crypto = require("crypto");
+const { type } = require('os');
 
 var userSchema = new mongoose.Schema({
     firstName:{type: String, required: true},
@@ -7,9 +8,16 @@ var userSchema = new mongoose.Schema({
     email:{type: String, required: true, unique: true},
     phone:{type: String, required: true},
     passWord:{type: String, required: true},
-    address:{type: String, required: true},
+    address:{
+        type: Array,
+        default: []
+    },
     city:{type: String, required: true},
-    cart:{type:Array,default:[] },
+    cart:[{
+        product:{type: mongoose.Types.ObjectId, ref:"Product"},
+        quantity:{type: Number, default: 0},
+        color:{type: String}
+    }],
     role :{type: String, default:"user"},
     wishList:{type: mongoose.Types.ObjectId, ref:"Product"},
     isBlocked:{type: Boolean, default:false},
@@ -17,7 +25,6 @@ var userSchema = new mongoose.Schema({
     passWordResetToken:{type: String},
     passWordResetExpires:{type: String},
     passWordChangedAt:{type: String}
-
 },{
     timestamps: true
 })
