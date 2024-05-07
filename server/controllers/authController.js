@@ -36,6 +36,7 @@ const register = asyncHandler(async(req,res)=>{
 
 const login = asyncHandler(async (req,res)=>{
     const {email,passWord} = req.body;
+    console.log(email,passWord)
     if(!email || !passWord){
         return res.status(400).json({
             success:false,
@@ -59,7 +60,9 @@ const login = asyncHandler(async (req,res)=>{
         await User.findByIdAndUpdate({_id: response._id},{reFreshToken},{new: true})
         res.cookie('reFreshToken',newreFreshToken,{
             httpOnly:true,
-            maxAge: 1000*60*60*24*7
+            maxAge: 1000*60*60*24*7,
+            sameSite: 'none',
+            secure: true
         })
         return res.status(200).json({
             success:true,
@@ -70,6 +73,7 @@ const login = asyncHandler(async (req,res)=>{
 }})
 const logout = asyncHandler(async(req,res)=>{
     const cookie = req.cookies;
+    console.log(cookie)
     if(!cookie || !cookie.reFreshToken) throw new Error('No refresh token');
     await User.findOneAndUpdate({reFreshToken:cookie.reFreshToken},{reFreshToken: ""}, {new: true})
     res.clearCookie('reFreshToken',{
