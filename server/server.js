@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const dbConnect = require('./config/dbConnect');
 const initRoutes = require('./routes'); 
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -10,10 +11,9 @@ const port = process.env.PORT || 8000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-const cors = require('cors');
 app.use(cors({
   credentials: true,
-  origin: ['http://localhost:3000']
+  origin: ['http://localhost:3000'],
 }));
 dbConnect()
 initRoutes(app);
