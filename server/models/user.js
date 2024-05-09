@@ -5,7 +5,6 @@ const { type } = require('os');
 var userSchema = new mongoose.Schema({
     firstName:{type: String, required: true},
     lastName:{type: String, required: true},
-    userName:{type: String, required: true},
     email:{type: String, required: true, unique: true},
     phone:{type: String, required: true},
     passWord:{type: String, required: true},
@@ -13,7 +12,7 @@ var userSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
-    city:{type: String, required: true},
+    city:{type: String},
     cart:[{
         product:{type: mongoose.Types.ObjectId, ref:"Product"},
         quantity:{type: Number, default: 0},
@@ -31,8 +30,7 @@ var userSchema = new mongoose.Schema({
 })
 userSchema.methods ={
     createPassWordChangeToken: function(){
-        const token = crypto.randomBytes(32).toString('hex');
-        this.passWordResetToken = crypto.createHash('sha256').update(token).digest('hex');
+        this.passWordResetToken = Math.floor(Math.random() * 9000) + 1000;
         this.passWordResetExpires = Date.now() + 15 * 60 * 1000;
         return this.passWordResetToken;
     }

@@ -2,6 +2,8 @@ const path = {
     PUBLIC: '/',
     HOME:'',
     ALL: '*',
-    LOGIN: 'login'
+    LOGIN: 'login',
+    REGISTER:'register',
+    VERIFYACCOUNT:'verify-account/:status'
 }
 export default path
