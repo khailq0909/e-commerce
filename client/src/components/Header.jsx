@@ -37,6 +37,7 @@ const handleLogout = () =>{
     const rs = apiLogout();
     if(rs){
         dispatch(logout())
+        setIsOpen(false);
     }
 
 }
