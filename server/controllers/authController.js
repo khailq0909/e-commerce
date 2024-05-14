@@ -8,6 +8,7 @@ const {
 } = require("../middlewares/jwt");
 const sendEmail = require("../ultils/sendEmail");
 const crypto = require("crypto");
+const { error } = require("console");
 
 const register = asyncHandler(async (req, res) => {
   const salt = bcrypt.genSaltSync(10);
@@ -60,7 +61,7 @@ const finalRegister = asyncHandler(async(req,res)=>{
     const userData = req.cookies
     if(!tokenVerify) throw new Error("Confirm failed");
     if(tokenVerify === userData?.dataUserRegister?.tokenVerify){
-        const user = await User.create(userData?.dataUserRegister)
+        await User.create(userData?.dataUserRegister)
         res.clearCookie("dataUserRegister")
         res.redirect(`${process.env.CLIENT_URL}/verify-account/success`)
 
@@ -72,24 +73,11 @@ const finalRegister = asyncHandler(async(req,res)=>{
 const login = asyncHandler(async (req, res) => {
   const { email, passWord } = req.body;
   console.log(email, passWord);
-  if (!email || !passWord) {
-    return res.status(400).json({
-      success: false,
-      mes: "Missing inputs",
-    });
-  }
+  if (!email || !passWord) throw new Error("Missing input !!!")
   const response = await User.findOne({ email });
-  if (!response)
-    return res.status(400).json({
-      success: false,
-      mes: "User not found",
-    });
+  if (!response) throw new Error("User not found !!!")
   const isMatch = bcrypt.compareSync(passWord, response.passWord);
-  if (!isMatch)
-    return res.status(400).json({
-      success: false,
-      mes: "Wrong password",
-    });
+  if (!isMatch) throw new Error("Wrong email or password !!!")
   if (response && isMatch) {
     const { passWord, role, reFreshToken, ...userData } = response.toObject();
     const accessToken = generateAccessToken(response._id, role);
@@ -225,7 +213,21 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       : "refresh token invalid",
   });
 });
-
+const googleLogin = asyncHandler(async (req, res) => {
+  if(req.user){
+    return res.status(200).json({
+      error: false,
+      mes: "Login successful",
+      user: req.user
+    })
+  }else throw new Error("Login failed");
+})
+const googleLoginFailed = asyncHandler(async (req, res) => {
+  return res.status(400).json({
+    error: true,
+    mes: "Login failed",
+  })
+})
 module.exports = {
   register,
   login,
@@ -235,4 +237,6 @@ module.exports = {
   refreshAccessToken,
   finalRegister,
   checkOTP,
+  googleLogin,
+  googleLoginFailed,
 };

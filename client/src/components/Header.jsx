@@ -110,8 +110,6 @@ const handleLogout = () =>{
                     <div className="user-profile relative">
                         <div className="user flex items-center cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
                             <FontAwesomeIcon icon={faUserCircle} className='text-[24px] me-2 ms-3' />
-                            <span className=''>Account</span>
-                            <FontAwesomeIcon icon={faSortDown} className='text-[16px] mb-2 ms-1 ' />
                         </div>
                         {
                             isOpen &&
@@ -120,7 +118,7 @@ const handleLogout = () =>{
                                     isLoggedIn ?
                                     <ul>
                                         <li className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'><a href="/profile">Profile</a></li>
-                                        <li className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all' onClick={handleLogout}>Log Out</li>
+                                        <li className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all' onClick={handleLogout}>Exit</li>
                                     </ul>  
                                     :
                                     <ul>
