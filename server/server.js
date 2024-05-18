@@ -5,7 +5,7 @@ const dbConnect = require("./config/dbConnect");
 const initRoutes = require("./routes");
 const cors = require("cors");
 const passport = require('passport');
-const googleAuth = require("./config/googleAuth");
+const googleAuth = require("./controllers/googleAuth");
 const session = require('express-session');
 
 
@@ -28,7 +28,7 @@ app.all('/*', function(req, res, next) {
   next();
 });
 
-app.use(session({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+app.use(session({ secret: process.env.JWT_SECRET, resave: true, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 googleAuth();

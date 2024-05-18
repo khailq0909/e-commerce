@@ -8,7 +8,6 @@ const {
 } = require("../middlewares/jwt");
 const sendEmail = require("../ultils/sendEmail");
 const crypto = require("crypto");
-const { error } = require("console");
 
 const register = asyncHandler(async (req, res) => {
   const salt = bcrypt.genSaltSync(10);
@@ -20,22 +19,11 @@ const register = asyncHandler(async (req, res) => {
     });
   }
   const user = await User.findOne({ email: email });
-  if (user) {
-    throw new Error("User has exited!");
-  } else {
-    const tokenVerify = crypto.randomBytes(10).toString("hex");
-    const passwordhHash = bcrypt.hashSync(req.body.passWord, salt);
-    const dataUser = {
-      tokenVerify: tokenVerify,
-      ...req.body,
-      passWord: passwordhHash,
-    };
-    res.cookie("dataUserRegister", dataUser, {
-      httpOnly: true,
-      maxAge: 15 + 60 * 1000,
-      secure: true,
-    });
-    const html = `
+  if (user) throw new Error("Account has exited!");
+
+  const tokenVerify = crypto.randomBytes(10).toString("hex");
+  const passwordhHash = bcrypt.hashSync(req.body.passWord, salt);
+  const html = `
     <h1>Confirm Email</h1>
     </br>
     <p>Please click this link to confirm your account</p>
@@ -43,41 +31,45 @@ const register = asyncHandler(async (req, res) => {
     <strong>This link will expried in 15 munites fron now, please use this link as soon as possible</strong>
     <a href=${process.env.SERVER_URL}/api/auth/account-verify/${tokenVerify}>Click Here</a>
     `;
-    const data = {
-      email: email,
-      subject: "Confirm Email",
-      html,
-    };
-    const rs = await sendEmail(data);
-    return res.status(200).json({
-      success: rs?true:false,
-      mes: rs?"Please check your email to confirm your account":"Cannot send email",
-    });
-  }
+  const data = {
+    email: email,
+    subject: "Confirm Email",
+    html,
+  };
+  await sendEmail(data);
+  const dataUser = {
+    tokenVerify: tokenVerify,
+    ...req.body,
+    passWord: passwordhHash,
+  };
+  const newUser = await User.create(dataUser);
+  return res.status(200).json({
+    success: newUser ? true : false,
+    mes: newUser ? "Register Successfull" : "Register Failed",
+  });
 });
 
-const finalRegister = asyncHandler(async(req,res)=>{
-    const tokenVerify = req.params.token
-    const userData = req.cookies
-    if(!tokenVerify) throw new Error("Confirm failed");
-    if(tokenVerify === userData?.dataUserRegister?.tokenVerify){
-        await User.create(userData?.dataUserRegister)
-        res.clearCookie("dataUserRegister")
-        res.redirect(`${process.env.CLIENT_URL}/verify-account/success`)
-
-    }else{
-        res.clearCookie("dataUserRegister")
-        res.redirect(`${process.env.CLIENT_URL}/verify-account/failed`)
-    }
-})
+const finalRegister = asyncHandler(async (req, res) => {
+  const tokenVerify = req.params.token;
+  const user = await User.findOne({ tokenVerify });
+  if (!tokenVerify) throw new Error("Confirm failed");
+  if (tokenVerify === user.tokenVerify) {
+    user.isVerified = true;
+    user.save();
+    res.redirect(`${process.env.CLIENT_URL}/verify-account/success`);
+  } else {
+    res.redirect(`${process.env.CLIENT_URL}/verify-account/failed`);
+  }
+});
 const login = asyncHandler(async (req, res) => {
   const { email, passWord } = req.body;
-  console.log(email, passWord);
-  if (!email || !passWord) throw new Error("Missing input !!!")
+  if (!email || !passWord) throw new Error("Missing input !!!");
   const response = await User.findOne({ email });
-  if (!response) throw new Error("User not found !!!")
+  if (!response) throw new Error("User not found !!!");
+  if (response.isVerified === false)
+    throw new Error("Email not verify yet, Please verify your email");
   const isMatch = bcrypt.compareSync(passWord, response.passWord);
-  if (!isMatch) throw new Error("Wrong email or password !!!")
+  if (!isMatch) throw new Error("Wrong email or password !!!");
   if (response && isMatch) {
     const { passWord, role, reFreshToken, ...userData } = response.toObject();
     const accessToken = generateAccessToken(response._id, role);
@@ -121,8 +113,8 @@ const logout = asyncHandler(async (req, res) => {
 });
 
 const forgotPassWord = asyncHandler(async (req, res) => {
-  const {email} = req.body;
-  console.log(email)
+  const { email } = req.body;
+  console.log(email);
   if (!email) throw new Error("Missing email!!!");
   const user = await User.findOne({ email });
   if (!user) throw new Error("User not found");
@@ -147,8 +139,8 @@ const forgotPassWord = asyncHandler(async (req, res) => {
     rs,
   });
 });
-const checkOTP = asyncHandler(async(req,res)=>{
-  const {resetToken} = req.body
+const checkOTP = asyncHandler(async (req, res) => {
+  const { resetToken } = req.body;
   if (!resetToken) throw new Error("Missing input!!!");
   const user = await User.findOne({
     passWordResetToken: resetToken,
@@ -159,14 +151,14 @@ const checkOTP = asyncHandler(async(req,res)=>{
     success: user ? true : false,
     mes: user ? "Valid OTP" : "Invalid OTP",
   });
-})
+});
 const resetPassWord = asyncHandler(async (req, res) => {
   const { passWord, email } = req.body;
-  console.log(req.body)
+  console.log(req.body);
   const salt = bcrypt.genSaltSync(10);
   if (!passWord || !email) throw new Error("Missing input!!!");
 
-  const user = await User.findOne({email});
+  const user = await User.findOne({ email });
   if (!user) throw new Error("Invalid reset token!!!");
   const passwordhHash = bcrypt.hashSync(passWord, salt);
   user.passWord = passwordhHash;
@@ -214,20 +206,20 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   });
 });
 const googleLogin = asyncHandler(async (req, res) => {
-  if(req.user){
+  if (req.user) {
     return res.status(200).json({
       error: false,
-      mes: "Login successful",
-      user: req.user
-    })
-  }else throw new Error("Login failed");
-})
+      mes: "Login successfull",
+      user: req.user,
+    });
+  } else throw new Error("Login failed");
+});
 const googleLoginFailed = asyncHandler(async (req, res) => {
   return res.status(400).json({
     error: true,
     mes: "Login failed",
-  })
-})
+  });
+});
 module.exports = {
   register,
   login,

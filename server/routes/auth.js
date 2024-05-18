@@ -14,7 +14,10 @@ router.get('/account-verify/:token', ctrls.finalRegister);
 router.post('/check-otp', ctrls.checkOTP);
 router.get('/login/success', ctrls.googleLogin)
 router.get('/login/failed', ctrls.googleLoginFailed)
-router.get('/google/callback', passport.authenticate('google', { successRedirect: process.env.CLIENT_URL,failureRedirect:"/login/failed" }));
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login/failed' }),
+(req, res) => {
+  res.redirect('http://localhost:3000');
+});
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 module.exports = router

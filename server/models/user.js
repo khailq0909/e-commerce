@@ -5,9 +5,8 @@ const { type } = require('os');
 var userSchema = new mongoose.Schema({
     firstName:{type: String, required: true},
     lastName:{type: String, required: true},
-    username:{type: String, required: true},
     email:{type: String, required: true, unique: true},
-    phone:{type: String, required: true},
+    phone:{type: String},
     passWord:{type: String, required: true},
     address:{
         type: Array,
@@ -21,6 +20,8 @@ var userSchema = new mongoose.Schema({
     }],
     role :{type: String, default:"user"},
     wishList:{type: mongoose.Types.ObjectId, ref:"Product"},
+    tokenVerify:{type: String},
+    isVerified:{type: Boolean, default: false},
     isBlocked:{type: Boolean, default:false},
     reFreshToken:{type: String},
     passWordResetToken:{type: String},
