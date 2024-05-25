@@ -7,16 +7,16 @@ import {
 import {
     faBasketShopping,
     faSearch,
-    faSortDown
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { apiLogout } from '../apis';
 import { logout } from '../store/user/userSlice';
+import {Navigation} from '../components/Index'
 function Header() {
     const { isLoggedIn } = useSelector(state => state.user)
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
     const [cartDisplay, setCartDisplay] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -33,17 +33,17 @@ function Header() {
             document.removeEventListener("click", handleClickOutside);
         };
     }, [cartRef]);
-const handleLogout = () =>{
-    const rs = apiLogout();
-    if(rs){
-        dispatch(logout())
-        setIsOpen(false);
+    const handleLogout = () => {
+        const rs = apiLogout();
+        if (rs) {
+            dispatch(logout())
+            setIsOpen(false);
+        }
+        setIsOpen(false)
     }
-
-}
     return (
-        <div className='w-full bg-[#F8F1E3] h-[63px] flex justify-center items-center'>
-            <div className="w-main flex justify-between items-center">
+        <div className='w-full bg-[#F8F1E3] flex justify-center items-center fixed top-0 left-0 right-0 z-50 flex-col'>
+            <div className="w-main flex justify-between items-center  h-[63px]">
                 <div className="logo">
                     <Link to={'/'}><img src={logo} alt="tokyolife" /></Link>
                 </div>
@@ -56,7 +56,7 @@ const handleLogout = () =>{
                         <FontAwesomeIcon icon={faBasketShopping} className='text-[24px] cursor-pointer me-3' />
                         <span className='absolute right-0 top-[-4px] ps-2 pt-[2px] pb-[2px] pe-2 text-[12px] text-white rounded bg-main'>0</span>
                         {cartDisplay &&
-                            <div className="cart-modal shadow-md w-[500px] bg-white absolute right-3 mt-[20px]">
+                            <div className="cart-modal shadow-md w-[500px] bg-white absolute right-3 mt-[20px] z-30">
                                 <div className="p-3  border-t-0 border-e-0 border-s-0 border-dashed border-2">
                                     <div className="cart-item">
                                         <div className="flex flex-row">
@@ -116,15 +116,23 @@ const handleLogout = () =>{
                             <div className="modal-user-action bg-white shadow-md absolute min-w-[150px] right-[-30%] top-[44px] rounded pt-3 pb-3">
                                 {
                                     isLoggedIn ?
-                                    <ul>
-                                        <li className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'><a href="/profile">Profile</a></li>
-                                        <li className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all' onClick={handleLogout}>Exit</li>
-                                    </ul>  
-                                    :
-                                    <ul>
-                                        <li className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'><a href="/login">Login</a></li>
-                                        <li className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'><a href="/register">Register</a></li>
-                                    </ul>
+                                        <div className='flex flex-col'>
+                                            <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
+                                                <Link to={'/profile'}>Profile</Link>
+                                            </div>
+                                            <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
+                                                <Link onClick={handleLogout}>Exit</Link>
+                                            </div>
+                                        </div>
+                                        :
+                                        <div className='flex flex-col'>
+                                            <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
+                                                <Link to={'/login'} onClick={() => setIsOpen(false)}>Login</Link>
+                                            </div>
+                                            <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
+                                                <Link to={'/register'} onClick={() => setIsOpen(false)}>Register</Link>
+                                            </div>
+                                        </div>
                                 }
                             </div>
                         }
@@ -132,6 +140,7 @@ const handleLogout = () =>{
                     </div>
                 </div>
             </div>
+            <Navigation/>
         </div>
     )
 }

@@ -5,7 +5,7 @@ import {Login,Home,Public, Register, VerifyAccount} from './pages/public/Index'
 import path from './ultils/path'
 function App() {
   return (
-    <div className="min-h-screen font-main">
+    <div className="min-h-screen font-main relative">
       <Routes>
         <Route path={path.PUBLIC} element={<Public/>}>
             <Route path={path.LOGIN} element={<Login/>}/>
