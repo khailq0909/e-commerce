@@ -2,9 +2,14 @@ import React, { useState } from 'react';
 import { apiRegister } from '../../apis/user';
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faEye,
+    faEyeSlash
+} from "@fortawesome/free-solid-svg-icons";
 function Register() {
     const navigate = useNavigate();
+    const [visible, setVisible] = useState(false);
     const [error, setError] = useState({});
     const [credentials, setCredentials] = useState({
         firstName: '',
@@ -64,31 +69,32 @@ function Register() {
                 <br />
                 <div className="group-input flex flex-col mt-5">
                     <input type="text" id='firstName' placeholder='First Name' className='border p-3 outline-black' onChange={handleChange} />
-                    {error && <span className='text-main'>{error.firstName}</span>}
+                    {error && <span className='text-main mt-3'>{error.firstName}</span>}
                 </div>
 
                 <div className="group-input flex flex-col mt-5">
                     <input type="text" id='lastName' placeholder='Last Name' className='border p-3 outline-black' onChange={handleChange} />
-                    {error && <span className='text-main'>{error.lastName}</span>}
+                    {error && <span className='text-main mt-3'>{error.lastName}</span>}
                 </div>
 
                 <div className="group-input flex flex-col mt-5">
                     <input type="number" id='phone' placeholder='Number Phone' className='border p-3 outline-black' onChange={handleChange} />
-                    {error && <span className='text-main'>{error.phone}</span>}
+                    {error && <span className='text-main mt-3'>{error.phone}</span>}
                 </div>
                 <div className="group-input flex flex-col mt-5">
                     <input type="text" id='email' placeholder='Email' className='border p-3 outline-black' onChange={handleChange} />
-                    {error && <span className='text-main'>{error.email}</span>}
+                    {error && <span className='text-main mt-3'>{error.email}</span>}
                 </div>
-                <div className="group-input flex flex-col mt-5">
-                    <input type="password" id='passWord' placeholder='Password' className='border p-3 outline-black' onChange={handleChange} />
-                    {error && <span className='text-main'>{error.passWord}</span>}
+                <div className="group-input flex flex-col mt-3 relative">
+                    <input type={`${visible? 'password': 'text'}`} id='passWord' placeholder='Password' className='border p-3 outline-black' onChange={handleChange} />
+                    {error && <span className='text-main mt-3'>{error.passWord}</span>}
+                    <FontAwesomeIcon icon={visible? faEyeSlash : faEye} className='absolute right-0  cursor-pointer p-4' onClick={() => setVisible(!visible)} />
                 </div>
                 {/* <div className="group-input flex flex-col mt-5">
             <input type="password" id='confirmPassWord' placeholder='Password Confirm' className='border p-3 outline-black' onChange={handleChange} />
         </div> */}
-                <a href="/login" className='mt-6 text-main'>already have an account?</a>
-                <div className="btn-login w-full mt-6 text-center bg-main pb-5 pt-5 cursor-pointer text-white font-medium" onClick={handleRegister}>
+                <a href="/login" className='mt-3 text-main'>already have an account?</a>
+                <div className="btn-login w-full mt-3 text-center bg-main pb-5 pt-5 cursor-pointer text-white font-medium" onClick={handleRegister}>
                     Register
                 </div>
             </div>

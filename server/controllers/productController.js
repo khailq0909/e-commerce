@@ -4,9 +4,16 @@ const slugify = require("slugify")
 const cloudinary = require('cloudinary').v2;
 
 const createProduct = asyncHandler(async(req,res)=>{
+    const imagesUploaded = req.files
+    const imageUrls =[]
+    const imageFileName = []
+    imagesUploaded?.forEach(item=>{
+        imageFileName.push(item.filename)
+        imageUrls.push(item.path)
+    })
     if(Object.keys(req.body).length === 0) throw new Error("Missing input!!!")
     if(req.body && req.body.title) req.body.slug = slugify(req.body.title)
-    const product = new Product(req.body)
+    const product = new Product({...req.body, images: imageUrls, imagefilenames: imageFileName})
     const response = await product.save()
     return res.status(200).json({
         success:response ? true : false,
@@ -53,9 +60,6 @@ const getAllProducts = asyncHandler(async(req,res)=>{
     const formatedQueries = JSON.parse(queryString)
     //Filtering
     if(queries?.title) formatedQueries.title = {$regex: queries.title, $options: "i"}
-    // let queryCommand = Product.find(formatedQueries)
-
-    
     try {
         let queryCommand = Product.find(formatedQueries);
 
@@ -68,7 +72,7 @@ const getAllProducts = asyncHandler(async(req,res)=>{
             queryCommand = queryCommand.select(fields)
         }
         const page = +req.query.page || 1
-        const limit = +req.query.limit || 5;
+        const limit = +req.query.limit;
         const skip = (page -1 )*limit
         queryCommand.skip(skip).limit(limit)
 
@@ -132,7 +136,6 @@ const ratings = asyncHandler(async(req,res)=>{
 })
 
 const uploadProductImageUrls = asyncHandler(async(req,res)=>{
-    const imagesUploaded = req.files
     console.log(imagesUploaded)
     return res.json("Uploaded")
 })

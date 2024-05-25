@@ -21,6 +21,7 @@ var productSchema = new mongoose.Schema({
     required: true 
 },
   images: [],
+  imagesfilenames:[],
   category: { 
     type: mongoose.Types.ObjectId, 
     ref: "Category", 
