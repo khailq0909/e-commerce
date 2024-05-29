@@ -1,9 +1,12 @@
 const Product = require("../models/product")
+const Category = require("../models/category")
 const asyncHandler = require("express-async-handler")
 const slugify = require("slugify")
 const cloudinary = require('cloudinary').v2;
 
 const createProduct = asyncHandler(async(req,res)=>{
+    const categoryId = req.body.categoryId
+    const customerTypesId = req.body.customerTypesId
     const imagesUploaded = req.files
     const imageUrls =[]
     const imageFileName = []
@@ -15,10 +18,20 @@ const createProduct = asyncHandler(async(req,res)=>{
     if(req.body && req.body.title) req.body.slug = slugify(req.body.title)
     const product = new Product({...req.body, images: imageUrls, imagefilenames: imageFileName})
     const response = await product.save()
+    const category = await Category.findById({_id: categoryId})
+    if(!category) throw new Error('Category not found')
+        console.log(customerTypesId)
+    const customerTypes = category.customerTypes.id(customerTypesId)
+    if(!customerTypes) throw new Error("not found customer type")
+    customerTypes.products.push(response._id)
+    await category.save()
     return res.status(200).json({
         success:response ? true : false,
         mes:response ? "Created successfully" : "Failed",
-        data: response
+        data:{
+            category: category,
+            product: response
+        }
     })
 })
 const deleteProduct = asyncHandler(async(req,res)=>{
