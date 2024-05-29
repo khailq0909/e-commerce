@@ -6,5 +6,6 @@ router.get('/', ctrls.getAllCategorys)
 router.put('/:cid',[verifyToken,verifyAdmin], ctrls.updateCategory)
 router.get('/find-category/:cid',[verifyToken,verifyAdmin], ctrls.getOneCategory)
 router.delete('/:cid',[verifyToken,verifyAdmin], ctrls.deleteCategory)
+router.put('/customerTypes/:cid',[verifyToken,verifyAdmin], ctrls.newCustomerTypes)
 
 module.exports = router
