@@ -6,4 +6,8 @@ export {default as ProductToday} from './ProductToday'
 export {default as Carousel} from './Carousel'
 export {default as CouPon} from './CouPon'
 export {default as CategoriesOverview} from './CategoriesOverview'
+export {default as SportShoes} from './SportShoes'
+export {default as Services} from './Services'
+export {default as ParagrapFooter} from './ParagrapFooter'
+export {default as Real} from './Real'
 

@@ -1,6 +1,5 @@
 import React from 'react'
-import {Carousel, ProductToday, CouPon } from '../../components/Index'
-import SportShoes from '../../components/SportShoes'
+import {Carousel, ProductToday, CouPon, Services, SportShoes, Real } from '../../components/Index'
 
 function Home() {
   return (
@@ -9,6 +8,8 @@ function Home() {
       <ProductToday/>
       <CouPon/>
       <SportShoes/>
+      <Real/>
+      <Services/>
     </div>
   )
 }

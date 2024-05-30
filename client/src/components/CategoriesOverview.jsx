@@ -31,7 +31,7 @@ function CategoriesOverview({ title, param, link, banner }) {
       setIndex(180)
     }
   }
-  const handleProduct = (id) =>{
+  const handleProduct = (id) => {
     navigate(`/product/${id}`)
   }
   console.log(Categ)
@@ -65,7 +65,7 @@ function CategoriesOverview({ title, param, link, banner }) {
           {
             Products && Products?.map((p, i) => {
               return (
-                <div key={i} className="product_item flex flex-col cursor-pointer" onClick={()=>handleProduct(p?._id)}>
+                <div key={i} className="product_item flex flex-col cursor-pointer" onClick={() => handleProduct(p?._id)}>
                   <div className="product_img">
                     <img src={p.images} alt="" className='' />
                   </div>
@@ -82,12 +82,12 @@ function CategoriesOverview({ title, param, link, banner }) {
               )
             })
           }
+        </div>
+        <div className="show_more text-center w-main mt-16 mb-16">
           <Link to={`/category/${Categ?._id}`}>
-            <div className="show_more text-center w-main mt-12">
-              <span className='pt-2 pb-2 ps-10 pe-10 bg-main text-white cursor-pointer rounded-sm'>
-                Show all
-              </span>
-            </div>
+            <span className='pt-2 pb-2 ps-10 pe-10 bg-main text-white cursor-pointer rounded-sm'>
+              Show all
+            </span>
           </Link>
         </div>
       </div>
