@@ -12,8 +12,6 @@ import {ParagrapFooter } from '../components/Index'
 function Footer() {
     return (
         <>
-      <ParagrapFooter/>
-
             <div className="w-main mt-[64px]">
                 <div className="grid grid-cols-12 gap-5">
                     <div className="grid grid-cols-4 col-span-9">

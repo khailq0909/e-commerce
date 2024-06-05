@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 function Register() {
     const navigate = useNavigate();
-    const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState(true);
     const [error, setError] = useState({});
     const [credentials, setCredentials] = useState({
         firstName: '',
@@ -63,7 +63,7 @@ function Register() {
     }
     console.log(error)
     return (
-        <div className='w-main flex justify-center mt-11'>
+        <div className='w-main flex justify-center mt-20 mb-[50vh]'>
             <div action="" className='flex flex-col w-[500px]'>
                 <h1 className='font-semibold text-[24px] text-center'>Register</h1>
                 <br />
