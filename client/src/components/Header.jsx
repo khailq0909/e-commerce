@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { apiLogout } from '../apis';
 import { logout } from '../store/user/userSlice';
-import {Navigation} from '../components/Index'
+import { Navigation } from '../components/Index'
 function Header() {
     const { isLoggedIn } = useSelector(state => state.user)
     const dispatch = useDispatch();
@@ -117,21 +117,29 @@ function Header() {
                                 {
                                     isLoggedIn ?
                                         <div className='flex flex-col'>
-                                            <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
-                                                <Link to={'/profile'}>Profile</Link>
-                                            </div>
-                                            <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
-                                                <Link onClick={handleLogout}>Exit</Link>
-                                            </div>
+                                            <Link to={'/profile'}>
+                                                <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
+                                                    Profile
+                                                </div>
+                                            </Link>
+                                            <Link onClick={handleLogout}>
+                                                <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
+                                                    Exit
+                                                </div>
+                                            </Link>
                                         </div>
                                         :
                                         <div className='flex flex-col'>
-                                            <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
-                                                <Link to={'/login'} onClick={() => setIsOpen(false)}>Login</Link>
-                                            </div>
-                                            <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
-                                                <Link to={'/register'} onClick={() => setIsOpen(false)}>Register</Link>
-                                            </div>
+                                            <Link to={'/login'} onClick={() => setIsOpen(false)}>
+                                                <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
+                                                    Login
+                                                </div>
+                                            </Link>
+                                            <Link to={'/register'} onClick={() => setIsOpen(false)}>
+                                                <div className='cursor-pointer p-2 hover:bg-[#c3c3c3] hover:text-white transition-all'>
+                                                    Register
+                                                </div>
+                                            </Link>
                                         </div>
                                 }
                             </div>
@@ -140,7 +148,7 @@ function Header() {
                     </div>
                 </div>
             </div>
-            <Navigation/>
+            <Navigation />
         </div>
     )
 }

@@ -15,7 +15,7 @@ import {
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   const [error, setError] = useState({
     err:''
@@ -44,7 +44,7 @@ function Login() {
 
   return (
     <>
-      <div className='w-main flex justify-center mt-11'>
+      <div className='w-main flex justify-center mt-20 mb-[50vh]'>
         <div className='flex flex-col w-[500px]'>
           <h1 className='font-semibold text-[24px] text-center'>Login</h1>
           <br />
@@ -58,9 +58,9 @@ function Login() {
 
           </div>
           {error && <span className='text-main mt-3'>{error.err}</span>}
-          <span className='mt-3 mb-3 text-main cursor-pointer' onClick={() => setOpenFg(true)} >forgot password?</span>
+          <span className='mt-3 mb-6 text-main cursor-pointer' onClick={() => setOpenFg(true)} >forgot password?</span>
           <Link to={`/${path.REGISTER}`}><span>don't have account? <span className='text-main cursor-pointer'>register here</span></span></Link>
-          <div className="btn-login w-full mt-3 text-center bg-main pb-5 pt-5 cursor-pointer text-white font-medium" onClick={handleLogin}>
+          <div className="btn-login w-full mt-6 text-center bg-main pb-5 pt-5 cursor-pointer text-white font-medium" onClick={handleLogin}>
             Login
           </div>
         </div>
